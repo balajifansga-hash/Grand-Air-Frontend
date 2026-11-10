@@ -4,9 +4,7 @@ const getApiBase = (): string => {
     const customUrl = String(env.VITE_API_URL).trim();
     return customUrl.replace(/\/$/, '') + (customUrl.endsWith('/api') ? '' : '/api');
   }
-  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-    return 'http://localhost:5000/api';
-  }
+  // Always connect to live production Render backend with MongoDB Atlas & Resend
   return 'https://grand-air-backend.onrender.com/api';
 };
 

@@ -270,7 +270,7 @@ export const QRLabelCard: React.FC<QRLabelCardProps> = ({ unit, onVerify }) => {
       >
         <div className="p-1 bg-white">
           <QRCodeSVG
-            value={unit.qrPayload}
+            value={unit.serialNumber || unit.qrPayload}
             size={135}
             level="M"
             includeMargin={false}
