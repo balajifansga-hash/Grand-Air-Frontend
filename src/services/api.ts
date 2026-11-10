@@ -1,9 +1,21 @@
-const API_BASE = 'http://localhost:5000/api';
+const getApiBase = (): string => {
+  const env = (import.meta as any).env;
+  if (env && env.VITE_API_URL) {
+    const customUrl = String(env.VITE_API_URL).trim();
+    return customUrl.replace(/\/$/, '') + (customUrl.endsWith('/api') ? '' : '/api');
+  }
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5000/api';
+  }
+  return 'https://grand-air-backend.onrender.com/api';
+};
+
+const API_BASE = getApiBase();
 
 export const ApiService = {
   async isBackendOnline(): Promise<boolean> {
     try {
-      const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(1500) });
+      const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(6000) });
       return res.ok;
     } catch {
       return false;
