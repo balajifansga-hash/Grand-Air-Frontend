@@ -35,7 +35,10 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
   const performSearch = async (serial: string) => {
     if (!serial.trim()) return;
     setHasSearched(true);
-    const cleanSerial = serial.trim();
+    
+    // Extract clean Grand Air serial if embedded in JSON or URL
+    const match = serial.match(/GA-[A-Z0-9]{2,4}-\d{6}-B\d{2,4}-\d{3,5}/i);
+    const cleanSerial = match ? match[0].toUpperCase() : serial.trim().toUpperCase();
 
     // Try backend verification first
     try {
@@ -123,20 +126,26 @@ export const VerificationView: React.FC<VerificationViewProps> = ({
 
   const handleScannedData = (rawText: string) => {
     stopCamera();
-    let serialToSearch = rawText;
+    let serialToSearch = rawText.trim();
 
-    // Try parsing JSON payload if it is structured
-    try {
-      const parsed = JSON.parse(rawText);
-      if (parsed.sn) serialToSearch = parsed.sn;
-    } catch {
-      // Check if URL has ?verify=... or ?sn=...
+    // Direct Grand Air serial regex extractor (GA-CF-YYYYMM-BXX-XXXX)
+    const match = rawText.match(/GA-[A-Z0-9]{2,4}-\d{6}-B\d{2,4}-\d{3,5}/i);
+    if (match) {
+      serialToSearch = match[0].toUpperCase();
+    } else {
+      // Try parsing JSON payload if it is structured
       try {
-        const url = new URL(rawText);
-        const sn = url.searchParams.get('verify') || url.searchParams.get('sn');
-        if (sn) serialToSearch = sn;
+        const parsed = JSON.parse(rawText);
+        if (parsed.sn) serialToSearch = parsed.sn;
       } catch {
-        // use raw text
+        // Check if URL has ?verify=... or ?sn=...
+        try {
+          const url = new URL(rawText);
+          const sn = url.searchParams.get('verify') || url.searchParams.get('sn');
+          if (sn) serialToSearch = sn;
+        } catch {
+          // use raw text
+        }
       }
     }
 
