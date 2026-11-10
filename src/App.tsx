@@ -57,8 +57,8 @@ export const App: React.FC = () => {
 
         // Non-destructive merge: never drop units if user produced more locally!
         const unitMap = new Map<string, ProductUnit>();
-        (localUnits || []).forEach(item => unitMap.set(item.serialNumber.toUpperCase(), item));
-        (u || []).forEach(item => {
+        (localUnits || []).forEach((item: ProductUnit) => unitMap.set(item.serialNumber.toUpperCase(), item));
+        (u || []).forEach((item: ProductUnit) => {
           const key = item.serialNumber.toUpperCase();
           if (!unitMap.has(key)) {
             unitMap.set(key, item);
@@ -71,8 +71,8 @@ export const App: React.FC = () => {
         StorageService.saveAllUnits(combinedUnits);
 
         const batchMap = new Map<string, ManufacturingBatch>();
-        (localBatches || []).forEach(item => batchMap.set(item.id, item));
-        (b || []).forEach(item => batchMap.set(item.id, item));
+        (localBatches || []).forEach((item: ManufacturingBatch) => batchMap.set(item.id, item));
+        (b || []).forEach((item: ManufacturingBatch) => batchMap.set(item.id, item));
         const combinedBatches = Array.from(batchMap.values());
         setBatches(combinedBatches);
         StorageService.saveAllBatches(combinedBatches);
